@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Instagram, Youtube, Spotify, Facebook } from 'lucide-react';
+import { Instagram, Youtube, Music2, Facebook } from 'lucide-react';
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -7,7 +7,7 @@ export const Footer = () => {
   const socialLinks = [
     { icon: Instagram, href: '#', label: 'Instagram' },
     { icon: Youtube, href: '#', label: 'YouTube' },
-    { icon: Spotify, href: '#', label: 'Spotify' },
+    { icon: Music2, href: '#', label: 'Spotify' },
     { icon: Facebook, href: '#', label: 'Facebook' },
   ];
 
