@@ -139,11 +139,21 @@ O frontend estará disponível em `http://localhost:3000`
 
 ## 📝 Scripts Disponíveis
 
-### Backend
+### Na raiz do projeto (package.json)
+- `npm run dev` ou `npm run dev:frontend` - Inicia o frontend
+- `npm run dev:backend` - Inicia o backend
+- `npm run build` - Cria build de produção do frontend
+- `npm install` - Instala dependências do frontend
+- `npm run install:backend` - Instala dependências do backend
+- `npm run install:all` - Instala todas as dependências
+- `npm run seed` - Popula o banco com dados iniciais
+
+### Backend (dentro de `backend/`)
 - `python server.py` - Inicia o servidor
 - `python seed_data.py` - Popula o banco com dados iniciais
+- `uvicorn server:app --reload` - Inicia com reload automático
 
-### Frontend
+### Frontend (dentro de `frontend/`)
 - `npm start` - Inicia o servidor de desenvolvimento
 - `npm run build` - Cria build de produção
 - `npm test` - Executa os testes
