@@ -104,7 +104,7 @@ export const ProductsSection = () => {
         transition={{ duration: 0.6, delay: 0.4 }}
         className="mt-12 text-center"
       >
-        <Button variant="secondary" as="a" href="/products">
+        <Button variant="secondary" to="/products">
           Ver Todos os Produtos
         </Button>
       </motion.div>

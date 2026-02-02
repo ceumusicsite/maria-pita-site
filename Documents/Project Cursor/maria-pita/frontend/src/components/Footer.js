@@ -5,7 +5,7 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
-    { icon: Instagram, href: '#', label: 'Instagram' },
+    { icon: Instagram, href: 'https://www.instagram.com/mariapitacantora_/', label: 'Instagram', target: '_blank', rel: 'noopener noreferrer' },
     { icon: Youtube, href: '#', label: 'YouTube' },
     { icon: Music2, href: '#', label: 'Spotify' },
     { icon: Facebook, href: '#', label: 'Facebook' },
@@ -61,6 +61,8 @@ export const Footer = () => {
                   <a
                     key={social.label}
                     href={social.href}
+                    target={social.target || '_self'}
+                    rel={social.rel || ''}
                     aria-label={social.label}
                     className="text-text-secondary hover:text-primary transition-colors p-2 hover:scale-110 transition-transform"
                   >

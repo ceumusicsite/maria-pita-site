@@ -127,7 +127,7 @@ export const ReleasesSection = () => {
         transition={{ duration: 0.6, delay: 0.4 }}
         className="mt-12 text-center"
       >
-        <Button variant="secondary" as="a" href="/releases">
+        <Button variant="secondary" to="/releases">
           Ver Todos os Lançamentos
         </Button>
       </motion.div>

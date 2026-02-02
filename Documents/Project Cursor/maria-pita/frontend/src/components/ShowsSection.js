@@ -105,7 +105,7 @@ export const ShowsSection = () => {
         transition={{ duration: 0.6, delay: 0.4 }}
         className="mt-12 text-center"
       >
-        <Button variant="secondary" as="a" href="/shows">
+        <Button variant="secondary" to="/shows">
           Ver Todos os Shows
         </Button>
       </motion.div>
