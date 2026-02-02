@@ -13,9 +13,17 @@ export const ReleasesSection = () => {
     const fetchReleases = async () => {
       try {
         const data = await api.get('/releases?featured=true');
-        setReleases(data.slice(0, 4));
+        console.log('Releases fetched:', data);
+        const sortedReleases = data.sort((a, b) => {
+          const dateA = new Date(a.release_date);
+          const dateB = new Date(b.release_date);
+          return dateB - dateA; // Mais recente primeiro
+        });
+        setReleases(sortedReleases.slice(0, 4));
+        console.log('Releases to display:', sortedReleases.slice(0, 4));
       } catch (error) {
         console.error('Error fetching releases:', error);
+        setReleases([]);
       } finally {
         setLoading(false);
       }
@@ -48,6 +56,12 @@ export const ReleasesSection = () => {
         </p>
       </motion.div>
 
+      {releases.length === 0 && !loading && (
+        <div className="text-center text-text-secondary py-8">
+          Nenhum lançamento encontrado.
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {releases.map((release, index) => (
           <motion.div

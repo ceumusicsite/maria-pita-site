@@ -1,0 +1,28 @@
+{
+  "name": "maria-pita-site",
+  "version": "1.0.0",
+  "description": "Site oficial da artista gospel Maria Pita",
+  "private": true,
+  "scripts": {
+    "start": "cd \"Documents/Project Cursor/maria-pita/frontend\" && npm start",
+    "dev": "cd \"Documents/Project Cursor/maria-pita/frontend\" && npm start",
+    "dev:frontend": "cd \"Documents/Project Cursor/maria-pita/frontend\" && npm start",
+    "dev:backend": "cd \"Documents/Project Cursor/maria-pita/backend\" && python server.py",
+    "build": "cd \"Documents/Project Cursor/maria-pita/frontend\" && npm run build",
+    "install": "cd \"Documents/Project Cursor/maria-pita/frontend\" && npm install",
+    "install:backend": "cd \"Documents/Project Cursor/maria-pita/backend\" && pip install -r requirements.txt",
+    "install:all": "npm run install && npm run install:backend",
+    "seed": "cd \"Documents/Project Cursor/maria-pita/backend\" && python seed_data.py",
+    "test": "cd \"Documents/Project Cursor/maria-pita/frontend\" && npm test"
+  },
+  "keywords": [
+    "gospel",
+    "music",
+    "maria-pita"
+  ],
+  "author": "",
+  "license": "ISC"
+}
+
+
+
