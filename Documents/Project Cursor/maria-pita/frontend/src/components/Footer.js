@@ -6,7 +6,7 @@ export const Footer = () => {
 
   const socialLinks = [
     { icon: Instagram, href: 'https://www.instagram.com/mariapitacantora_/', label: 'Instagram', target: '_blank', rel: 'noopener noreferrer' },
-    { icon: Youtube, href: '#', label: 'YouTube' },
+    { icon: Youtube, href: 'https://www.youtube.com/@mariapitacantora', label: 'YouTube', target: '_blank', rel: 'noopener noreferrer' },
     { icon: Music2, href: '#', label: 'Spotify' },
     { icon: Facebook, href: '#', label: 'Facebook' },
   ];
