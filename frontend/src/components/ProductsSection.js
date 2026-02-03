@@ -16,6 +16,7 @@ export const ProductsSection = () => {
         setProducts(data.slice(0, 4));
       } catch (error) {
         console.error('Error fetching products:', error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }

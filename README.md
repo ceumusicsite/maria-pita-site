@@ -26,7 +26,7 @@ maria-pita/
 
 ### Pré-requisitos
 
-- Python 3.11+
+- Python 3.11 ou 3.12 (Python 3.14 não é compatível com o cliente do Supabase)
 - Node.js 18+
 - MongoDB (local ou remoto)
 - npm ou yarn
@@ -41,7 +41,7 @@ cd backend
 2. Crie um ambiente virtual (recomendado):
 ```bash
 python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
+source venv/bin/activate  # No Windows (PowerShell): .\venv\Scripts\Activate.ps1
 ```
 
 3. Instale as dependências:

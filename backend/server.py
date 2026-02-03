@@ -111,10 +111,56 @@ class BookingCreate(BaseModel):
     phone: str
     message: str
 
+class News(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    title: str
+    excerpt: str
+    content: Optional[str] = None
+    category: str
+    date: str
+    image: Optional[str] = None
+    icon: Optional[str] = None
+    published: bool = True
+
+class NewsCreate(BaseModel):
+    title: str
+    excerpt: str
+    content: Optional[str] = None
+    category: str
+    date: str
+    image: Optional[str] = None
+    icon: Optional[str] = None
+    published: bool = True
+
+class Artist(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    name: str
+    photo_url: str
+    description: str
+    mission: Optional[str] = None
+
 # Routes
 @api_router.get("/")
 async def root():
     return {"message": "Maria Pita API - Official Website"}
+
+# About / Artist (Sobre - Maria Pita)
+@api_router.get("/about", response_model=Artist)
+async def get_about():
+    try:
+        response = supabase.table("artist").select("*").limit(1).execute()
+        if not response.data:
+            raise HTTPException(status_code=404, detail="About not found")
+        artist = response.data[0]
+        artist["id"] = str(artist["id"])
+        return artist
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching about: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Releases
 @api_router.get("/releases", response_model=List[Release])
@@ -310,6 +356,70 @@ async def subscribe_newsletter(subscriber_input: NewsletterCreate):
         raise
     except Exception as e:
         logger.error(f"Error subscribing newsletter: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# News
+@api_router.get("/news", response_model=List[News])
+async def get_news(category: Optional[str] = Query(None), limit: int = Query(10)):
+    try:
+        query = supabase.table("news").select("*")
+        
+        if category:
+            query = query.eq("category", category)
+        
+        query = query.eq("published", True).order("date", desc=True).limit(limit)
+        response = query.execute()
+        
+        # Converter UUIDs e datas para string
+        news_items = []
+        for item in response.data:
+            item['id'] = str(item['id'])
+            if item.get('date'):
+                item['date'] = str(item['date'])
+            news_items.append(item)
+        
+        return news_items
+    except Exception as e:
+        logger.error(f"Error fetching news: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/news/{news_id}", response_model=News)
+async def get_news_item(news_id: str):
+    try:
+        response = supabase.table("news").select("*").eq("id", news_id).execute()
+        
+        if not response.data:
+            raise HTTPException(status_code=404, detail="News not found")
+        
+        news = response.data[0]
+        news['id'] = str(news['id'])
+        if news.get('date'):
+            news['date'] = str(news['date'])
+        
+        return news
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching news item: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/news", response_model=News)
+async def create_news(news_input: NewsCreate):
+    try:
+        news_data = news_input.model_dump()
+        response = supabase.table("news").insert(news_data).execute()
+        
+        if not response.data:
+            raise HTTPException(status_code=500, detail="Failed to create news")
+        
+        news = response.data[0]
+        news['id'] = str(news['id'])
+        if news.get('date'):
+            news['date'] = str(news['date'])
+        
+        return news
+    except Exception as e:
+        logger.error(f"Error creating news: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Booking

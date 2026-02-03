@@ -40,10 +40,10 @@ export const NewsletterSection = () => {
           <Mail className="w-8 h-8 text-primary" />
         </div>
         <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-4">
-          Fique por <span className="text-gradient">Dentro</span>
+          Newsletter <span className="text-gradient">Exclusiva</span>
         </h2>
         <p className="text-text-secondary text-lg mb-8">
-          Receba novidades, lançamentos e informações sobre shows exclusivos
+          Receba novidades, lançamentos e informações sobre shows direto no seu e-mail
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">

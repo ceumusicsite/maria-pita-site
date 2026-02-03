@@ -41,6 +41,17 @@ CREATE TABLE IF NOT EXISTS products (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Tabela Artist (Sobre - perfil da Maria Pita, uma linha)
+CREATE TABLE IF NOT EXISTS artist (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL DEFAULT 'Maria Pita',
+    photo_url TEXT NOT NULL,
+    description TEXT NOT NULL,
+    mission TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Tabela de Newsletter (Inscritos)
 CREATE TABLE IF NOT EXISTS newsletter (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
