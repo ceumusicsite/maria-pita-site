@@ -93,6 +93,30 @@ ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE newsletter ENABLE ROW LEVEL SECURITY;
 ALTER TABLE booking_requests ENABLE ROW LEVEL SECURITY;
 
+-- Remover políticas existentes (se houver)
+DROP POLICY IF EXISTS "Allow public read access on releases" ON releases;
+DROP POLICY IF EXISTS "Allow public read access on shows" ON shows;
+DROP POLICY IF EXISTS "Allow public read access on products" ON products;
+DROP POLICY IF EXISTS "Allow public read access on newsletter" ON newsletter;
+DROP POLICY IF EXISTS "Allow public read access on booking_requests" ON booking_requests;
+
+DROP POLICY IF EXISTS "Allow service role insert on releases" ON releases;
+DROP POLICY IF EXISTS "Allow service role insert on shows" ON shows;
+DROP POLICY IF EXISTS "Allow service role insert on products" ON products;
+DROP POLICY IF EXISTS "Allow public insert on newsletter" ON newsletter;
+DROP POLICY IF EXISTS "Allow public insert on booking_requests" ON booking_requests;
+
+DROP POLICY IF EXISTS "Allow service role update on releases" ON releases;
+DROP POLICY IF EXISTS "Allow service role update on shows" ON shows;
+DROP POLICY IF EXISTS "Allow service role update on products" ON products;
+DROP POLICY IF EXISTS "Allow service role update on booking_requests" ON booking_requests;
+
+DROP POLICY IF EXISTS "Allow service role delete on releases" ON releases;
+DROP POLICY IF EXISTS "Allow service role delete on shows" ON shows;
+DROP POLICY IF EXISTS "Allow service role delete on products" ON products;
+DROP POLICY IF EXISTS "Allow service role delete on newsletter" ON newsletter;
+DROP POLICY IF EXISTS "Allow service role delete on booking_requests" ON booking_requests;
+
 -- Políticas RLS para leitura pública
 CREATE POLICY "Allow public read access on releases" ON releases FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on shows" ON shows FOR SELECT USING (true);

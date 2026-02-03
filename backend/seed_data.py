@@ -1,26 +1,8 @@
-from supabase import create_client
-import os
-from dotenv import load_dotenv
-from pathlib import Path
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
-
-SUPABASE_URL = os.environ.get('SUPABASE_URL')
-SUPABASE_KEY = os.environ.get('SUPABASE_SERVICE_KEY')
-
-if not SUPABASE_URL or not SUPABASE_KEY:
-    raise ValueError("SUPABASE_URL e SUPABASE_SERVICE_KEY devem estar configurados no .env")
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+from database import supabase
 
 def seed_database():
     print("Seeding database...")
-    
-    # Clear existing data
-    supabase.table("releases").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
-    supabase.table("shows").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
-    supabase.table("products").delete().neq("id", "00000000-0000-0000-0000-000000000000").execute()
+    print("Nota: Dados existentes serao mantidos (nao ha limpeza automatica)")
     
     # Seed releases
     releases = [
@@ -63,8 +45,8 @@ def seed_database():
     ]
     
     for release in releases:
-        supabase.table("releases").insert(release).execute()
-    print(f"✓ Inserted {len(releases)} releases")
+        supabase.table("releases").insert(release)
+    print(f"[OK] Inserted {len(releases)} releases")
     
     # Seed shows
     shows = [
@@ -111,8 +93,8 @@ def seed_database():
     ]
     
     for show in shows:
-        supabase.table("shows").insert(show).execute()
-    print(f"✓ Inserted {len(shows)} shows")
+        supabase.table("shows").insert(show)
+    print(f"[OK] Inserted {len(shows)} shows")
     
     # Seed products
     products = [
@@ -173,10 +155,10 @@ def seed_database():
     ]
     
     for product in products:
-        supabase.table("products").insert(product).execute()
-    print(f"✓ Inserted {len(products)} products")
+        supabase.table("products").insert(product)
+    print(f"[OK] Inserted {len(products)} products")
     
-    print("✓ Database seeded successfully!")
+    print("[OK] Database seeded successfully!")
 
 if __name__ == "__main__":
     seed_database()

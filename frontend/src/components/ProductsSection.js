@@ -56,8 +56,14 @@ export const ProductsSection = () => {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product, index) => (
+      {products.length === 0 && !loading ? (
+        <div className="text-center text-text-secondary py-8">
+          Nenhum produto disponível no momento.
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 30 }}
@@ -96,19 +102,21 @@ export const ProductsSection = () => {
             </Card>
           </motion.div>
         ))}
-      </div>
+          </div>
 
-      <motion.div
+          <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.4 }}
         className="mt-12 text-center"
       >
-        <Button variant="secondary" to="/products">
-          Ver Todos os Produtos
-        </Button>
-      </motion.div>
+            <Button variant="secondary" to="/products">
+              Ver Todos os Produtos
+            </Button>
+          </motion.div>
+        </>
+      )}
     </section>
   );
 };

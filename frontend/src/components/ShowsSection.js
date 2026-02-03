@@ -52,8 +52,14 @@ export const ShowsSection = () => {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {shows.map((show, index) => (
+      {shows.length === 0 && !loading ? (
+        <div className="text-center text-text-secondary py-8">
+          Nenhum show agendado no momento.
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {shows.map((show, index) => (
           <motion.div
             key={show.id}
             initial={{ opacity: 0, y: 30 }}
@@ -117,21 +123,23 @@ export const ShowsSection = () => {
             </Card>
           </motion.div>
         ))}
-      </div>
+          </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="mt-12 text-center"
-      >
-        <Link to="/shows">
-          <Button variant="secondary" type="button">
-            Ver Todos os Shows
-          </Button>
-        </Link>
-      </motion.div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-12 text-center"
+          >
+            <Link to="/shows">
+              <Button variant="secondary" type="button">
+                Ver Todos os Shows
+              </Button>
+            </Link>
+          </motion.div>
+        </>
+      )}
     </section>
   );
 };

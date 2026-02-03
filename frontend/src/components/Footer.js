@@ -7,7 +7,7 @@ export const Footer = () => {
   const socialLinks = [
     { icon: Instagram, href: 'https://www.instagram.com/mariapitacantora_/', label: 'Instagram', target: '_blank', rel: 'noopener noreferrer' },
     { icon: Youtube, href: 'https://www.youtube.com/@mariapitacantora', label: 'YouTube', target: '_blank', rel: 'noopener noreferrer' },
-    { icon: Music2, href: '#', label: 'Spotify' },
+    { icon: Music2, href: 'https://open.spotify.com/intl-pt/artist/7fw7DfkvI0fMyEKfOw0k6n', label: 'Spotify', target: '_blank', rel: 'noopener noreferrer' },
     { icon: Facebook, href: '#', label: 'Facebook' },
   ];
 
