@@ -159,6 +159,20 @@ class Artist(BaseModel):
     description: str
     mission: Optional[str] = None
 
+class SiteSettingsResponse(BaseModel):
+    id: str
+    instagram_url: str
+    youtube_url: str
+    spotify_url: str
+    tiktok_url: str
+
+class SiteSettingsUpdate(BaseModel):
+    instagram_url: Optional[str] = None
+    youtube_url: Optional[str] = None
+    spotify_url: Optional[str] = None
+    tiktok_url: Optional[str] = None
+
+
 # Routes
 @api_router.get("/")
 async def root():
@@ -1074,6 +1088,66 @@ async def update_shipping_settings(
         return settings
     except Exception as e:
         logger.error(f"Erro ao atualizar configurações de frete: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# --- SITE SETTINGS (SOCIAL LINKS) ---
+@api_router.get("/settings/social", response_model=SiteSettingsResponse)
+async def get_social_settings():
+    try:
+        response = supabase.table("site_settings").select("*").limit(1).execute()
+        if not response.data:
+            # Let's seed default links if none exist (safety fallback)
+            default_data = {
+                "instagram_url": "https://www.instagram.com/mariapitacantora_/",
+                "youtube_url": "https://www.youtube.com/@mariapitacantora",
+                "spotify_url": "https://open.spotify.com/intl-pt/artist/7fw7DfkvI0fMyEKfOw0k6n",
+                "tiktok_url": "https://www.tiktok.com/@mariapitacantora"
+            }
+            insert_res = supabase.table("site_settings").insert(default_data).execute()
+            if not insert_res.data:
+                raise HTTPException(status_code=500, detail="Falha ao inicializar configurações sociais")
+            settings = insert_res.data[0]
+        else:
+            settings = response.data[0]
+            
+        settings["id"] = str(settings["id"])
+        return settings
+    except Exception as e:
+        logger.error(f"Erro ao obter configurações sociais: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.patch("/settings/social", response_model=SiteSettingsResponse)
+async def update_social_settings(
+    settings_input: SiteSettingsUpdate,
+    admin: dict = Depends(verify_admin_token)
+):
+    try:
+        existing = supabase.table("site_settings").select("*").limit(1).execute()
+        if not existing.data:
+            default_data = {
+                "instagram_url": settings_input.instagram_url or "https://www.instagram.com/mariapitacantora_/",
+                "youtube_url": settings_input.youtube_url or "https://www.youtube.com/@mariapitacantora",
+                "spotify_url": settings_input.spotify_url or "https://open.spotify.com/intl-pt/artist/7fw7DfkvI0fMyEKfOw0k6n",
+                "tiktok_url": settings_input.tiktok_url or "https://www.tiktok.com/@mariapitacantora"
+            }
+            insert_res = supabase.table("site_settings").insert(default_data).execute()
+            if not insert_res.data:
+                raise HTTPException(status_code=500, detail="Falha ao inicializar configurações sociais")
+            settings = insert_res.data[0]
+        else:
+            settings_id = existing.data[0]["id"]
+            update_data = settings_input.model_dump(exclude_unset=True)
+            update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+            
+            response = supabase.table("site_settings").update(update_data).eq("id", settings_id).execute()
+            if not response.data:
+                raise HTTPException(status_code=500, detail="Falha ao atualizar configurações sociais")
+            settings = response.data[0]
+            
+        settings["id"] = str(settings["id"])
+        return settings
+    except Exception as e:
+        logger.error(f"Erro ao atualizar configurações sociais: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 # Include the router in the main app

@@ -37,6 +37,7 @@ export default function AdminDashboard() {
   const [releases, setReleases] = useState([]);
   const [about, setAbout] = useState({ name: '', photo_url: '', description: '', mission: '' });
   const [shippingSettings, setShippingSettings] = useState({ origin_cep: '', base_fee_pac: 0, base_fee_sedex: 0, additional_item_fee: 0 });
+  const [socialForm, setSocialForm] = useState({ instagram_url: '', youtube_url: '', spotify_url: '', tiktok_url: '' });
 
   // Modal / Editing States
   const [editingItem, setEditingItem] = useState(null); // { type: 'product'|'show'|'release', data: ... }
@@ -74,6 +75,7 @@ export default function AdminDashboard() {
       const fetchedReleases = await api.get('/releases');
       const fetchedAbout = await api.get('/about');
       const fetchedShipping = await api.get('/shipping/settings');
+      const fetchedSocial = await api.get('/settings/social');
 
       setOrders(fetchedOrders || []);
       setProducts(fetchedProducts || []);
@@ -81,6 +83,7 @@ export default function AdminDashboard() {
       setReleases(fetchedReleases || []);
       if (fetchedAbout) setAbout(fetchedAbout);
       if (fetchedShipping) setShippingSettings(fetchedShipping);
+      if (fetchedSocial) setSocialForm(fetchedSocial);
     } catch (err) {
       console.error(err);
       setError('Erro ao carregar dados do painel. Verifique a conexão com o servidor.');
@@ -267,6 +270,17 @@ export default function AdminDashboard() {
       alert('Configurações de frete atualizadas com sucesso!');
     } catch (err) {
       alert(`Erro ao atualizar frete: ${err.message}`);
+    }
+  };
+
+  const handleSaveSocialLinks = async (e) => {
+    e.preventDefault();
+    try {
+      const updated = await api.patch('/settings/social', socialForm);
+      setSocialForm(updated);
+      alert('Links de redes sociais atualizados com sucesso!');
+    } catch (err) {
+      alert(`Erro ao atualizar redes sociais: ${err.message}`);
     }
   };
 
@@ -1396,74 +1410,140 @@ export default function AdminDashboard() {
                   </form>
                 </div>
 
-                {/* Shipping Settings Card */}
-                <div className="lg:col-span-5 bg-[#0E0B12] border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
-                  <h3 className="text-lg font-bold uppercase tracking-wider text-white border-b border-white/10 pb-3">Regras de Frete (ViaCEP)</h3>
-                  
-                  <form onSubmit={handleSaveShippingSettings} className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">CEP de Origem</label>
-                      <input
-                        type="text"
-                        required
-                        value={shippingSettings.origin_cep}
-                        onChange={(e) => setShippingSettings({ ...shippingSettings, origin_cep: e.target.value })}
-                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B] font-mono"
-                        placeholder="01001-000"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
+                {/* Column for Shipping and Social Settings */}
+                <div className="lg:col-span-5 flex flex-col gap-8">
+                  {/* Shipping Settings Card */}
+                  <div className="bg-[#0E0B12] border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
+                    <h3 className="text-lg font-bold uppercase tracking-wider text-white border-b border-white/10 pb-3">Regras de Frete (ViaCEP)</h3>
+                    
+                    <form onSubmit={handleSaveShippingSettings} className="space-y-4">
                       <div className="space-y-1">
-                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">PAC Base (R$)</label>
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">CEP de Origem</label>
+                        <input
+                          type="text"
+                          required
+                          value={shippingSettings.origin_cep}
+                          onChange={(e) => setShippingSettings({ ...shippingSettings, origin_cep: e.target.value })}
+                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B] font-mono"
+                          placeholder="01001-000"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">PAC Base (R$)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            required
+                            value={shippingSettings.base_fee_pac}
+                            onChange={(e) => setShippingSettings({ ...shippingSettings, base_fee_pac: e.target.value })}
+                            className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">SEDEX Base (R$)</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            required
+                            value={shippingSettings.base_fee_sedex}
+                            onChange={(e) => setShippingSettings({ ...shippingSettings, base_fee_sedex: e.target.value })}
+                            className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">Adicional por item extra (R$)</label>
                         <input
                           type="number"
                           step="0.01"
                           required
-                          value={shippingSettings.base_fee_pac}
-                          onChange={(e) => setShippingSettings({ ...shippingSettings, base_fee_pac: e.target.value })}
+                          value={shippingSettings.additional_item_fee}
+                          onChange={(e) => setShippingSettings({ ...shippingSettings, additional_item_fee: e.target.value })}
                           className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
                         />
                       </div>
+
+                      <div className="p-4 bg-white/5 rounded-xl border border-white/5 text-xs text-white/60 leading-relaxed space-y-1">
+                        <p className="font-bold text-white uppercase">💡 Como funciona o cálculo:</p>
+                        <p>• PAC/SEDEX são multiplicados de acordo com a distância do estado de destino.</p>
+                        <p>• Cada produto adicional no carrinho incrementa a taxa extra informada acima.</p>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-3.5 bg-white text-black hover:bg-[#FF2E8B] hover:text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
+                      >
+                        <Save size={16} />
+                        <span>Atualizar Frete</span>
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Social Networks settings Card */}
+                  <div className="bg-[#0E0B12] border border-white/10 rounded-2xl p-6 md:p-8 space-y-6 shadow-2xl">
+                    <h3 className="text-lg font-bold uppercase tracking-wider text-white border-b border-white/10 pb-3">Redes Sociais</h3>
+                    
+                    <form onSubmit={handleSaveSocialLinks} className="space-y-4">
                       <div className="space-y-1">
-                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">SEDEX Base (R$)</label>
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">Instagram URL</label>
                         <input
-                          type="number"
-                          step="0.01"
+                          type="url"
                           required
-                          value={shippingSettings.base_fee_sedex}
-                          onChange={(e) => setShippingSettings({ ...shippingSettings, base_fee_sedex: e.target.value })}
+                          value={socialForm.instagram_url}
+                          onChange={(e) => setSocialForm({ ...socialForm, instagram_url: e.target.value })}
                           className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
+                          placeholder="https://www.instagram.com/..."
                         />
                       </div>
-                    </div>
 
-                    <div className="space-y-1">
-                      <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">Adicional por item extra (R$)</label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        required
-                        value={shippingSettings.additional_item_fee}
-                        onChange={(e) => setShippingSettings({ ...shippingSettings, additional_item_fee: e.target.value })}
-                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
-                      />
-                    </div>
+                      <div className="space-y-1">
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">YouTube URL</label>
+                        <input
+                          type="url"
+                          required
+                          value={socialForm.youtube_url}
+                          onChange={(e) => setSocialForm({ ...socialForm, youtube_url: e.target.value })}
+                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
+                          placeholder="https://www.youtube.com/..."
+                        />
+                      </div>
 
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/5 text-xs text-white/60 leading-relaxed space-y-1">
-                      <p className="font-bold text-white uppercase">💡 Como funciona o cálculo:</p>
-                      <p>• PAC/SEDEX são multiplicados de acordo com a distância do estado de destino.</p>
-                      <p>• Cada produto adicional no carrinho incrementa a taxa extra informada acima.</p>
-                    </div>
+                      <div className="space-y-1">
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">Spotify URL</label>
+                        <input
+                          type="url"
+                          required
+                          value={socialForm.spotify_url}
+                          onChange={(e) => setSocialForm({ ...socialForm, spotify_url: e.target.value })}
+                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
+                          placeholder="https://open.spotify.com/..."
+                        />
+                      </div>
 
-                    <button
-                      type="submit"
-                      className="w-full py-3.5 bg-white text-black hover:bg-[#FF2E8B] hover:text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
-                    >
-                      <Save size={16} />
-                      <span>Atualizar Frete</span>
-                    </button>
-                  </form>
+                      <div className="space-y-1">
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">TikTok URL</label>
+                        <input
+                          type="url"
+                          required
+                          value={socialForm.tiktok_url}
+                          onChange={(e) => setSocialForm({ ...socialForm, tiktok_url: e.target.value })}
+                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
+                          placeholder="https://www.tiktok.com/..."
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-3.5 bg-white text-black hover:bg-[#FF2E8B] hover:text-white rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-all"
+                      >
+                        <Save size={16} />
+                        <span>Salvar Redes Sociais</span>
+                      </button>
+                    </form>
+                  </div>
                 </div>
 
               </div>

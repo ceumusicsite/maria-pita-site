@@ -143,3 +143,23 @@ CREATE POLICY "Allow service role delete on shows" ON shows FOR DELETE USING (tr
 CREATE POLICY "Allow service role delete on products" ON products FOR DELETE USING (true);
 CREATE POLICY "Allow service role delete on newsletter" ON newsletter FOR DELETE USING (true);
 CREATE POLICY "Allow service role delete on booking_requests" ON booking_requests FOR DELETE USING (true);
+
+-- Tabela de Configurações do Site (Redes Sociais)
+CREATE TABLE IF NOT EXISTS site_settings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    instagram_url TEXT NOT NULL,
+    youtube_url TEXT NOT NULL,
+    spotify_url TEXT NOT NULL,
+    tiktok_url TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public read access on site_settings" ON site_settings;
+DROP POLICY IF EXISTS "Allow service role all on site_settings" ON site_settings;
+
+CREATE POLICY "Allow public read access on site_settings" ON site_settings FOR SELECT USING (true);
+CREATE POLICY "Allow service role all on site_settings" ON site_settings FOR ALL USING (true);
+

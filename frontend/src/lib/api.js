@@ -194,6 +194,14 @@ const staticAbout = {
   "mission": "Usar o dom da música para glorificar a Deus e levar pessoas a uma experiência transformadora com Cristo, através de canções que falam ao coração e elevam a alma."
 };
 
+const staticSocialSettings = {
+  "id": "default-social-settings",
+  "instagram_url": "https://www.instagram.com/mariapitacantora_/",
+  "youtube_url": "https://www.youtube.com/@mariapitacantora",
+  "spotify_url": "https://open.spotify.com/intl-pt/artist/7fw7DfkvI0fMyEKfOw0k6n",
+  "tiktok_url": "https://www.tiktok.com/@mariapitacantora"
+};
+
 export const api = {
   getHeaders() {
     const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
@@ -250,6 +258,10 @@ export const api = {
       
       if (cleanEndpoint === '/news') {
         return staticNews;
+      }
+      
+      if (cleanEndpoint === '/settings/social') {
+        return staticSocialSettings;
       }
       
       throw error;

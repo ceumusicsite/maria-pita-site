@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import PillNav from './PillNav';
 import StaggeredMenu from './StaggeredMenu';
 import logo from '../assets/logo.svg';
+import { api } from '@/lib/api';
 
 export const Navigation = () => {
   const location = useLocation();
@@ -31,6 +32,27 @@ export const Navigation = () => {
     }
   }, []);
 
+  const [socialLinks, setSocialLinks] = useState({
+    instagram_url: 'https://www.instagram.com/mariapitacantora_/',
+    youtube_url: 'https://www.youtube.com/@mariapitacantora',
+    spotify_url: 'https://open.spotify.com/intl-pt/artist/7fw7DfkvI0fMyEKfOw0k6n',
+    tiktok_url: 'https://www.tiktok.com/@mariapitacantora'
+  });
+
+  useEffect(() => {
+    const fetchSocialLinks = async () => {
+      try {
+        const data = await api.get('/settings/social');
+        if (data) {
+          setSocialLinks(data);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar redes sociais na navegação:', error);
+      }
+    };
+    fetchSocialLinks();
+  }, []);
+
   const navItems = [
     { label: 'Início', href: '/' },
     { label: 'Músicas', href: '/releases' },
@@ -48,9 +70,10 @@ export const Navigation = () => {
   }));
 
   const socialItems = [
-    { label: 'Instagram', link: 'https://www.instagram.com/mariapitacantora_/' },
-    { label: 'YouTube', link: 'https://www.youtube.com/@mariapitacantora' },
-    { label: 'Spotify', link: 'https://open.spotify.com/intl-pt/artist/7fw7DfkvI0fMyEKfOw0k6n' }
+    { label: 'Instagram', link: socialLinks.instagram_url },
+    { label: 'YouTube', link: socialLinks.youtube_url },
+    { label: 'Spotify', link: socialLinks.spotify_url },
+    { label: 'TikTok', link: socialLinks.tiktok_url }
   ];
 
   const toggleStyle = () => {
