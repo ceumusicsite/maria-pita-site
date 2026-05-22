@@ -1,14 +1,91 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { api } from '@/lib/api';
 import { Calendar, MapPin, Clock } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export const ShowsSection = () => {
   const [shows, setShows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const containerRef = useRef(null);
+
+  useGSAP(() => {
+    if (loading) return;
+
+    // Header Animation
+    gsap.fromTo(".shows-header",
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ".shows-header",
+          start: "top 85%",
+          once: true
+        }
+      }
+    );
+
+    // Empty state Animation
+    if (shows.length === 0) {
+      gsap.fromTo(".shows-empty",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: ".shows-empty",
+            start: "top 85%",
+            once: true
+          }
+        }
+      );
+      return;
+    }
+
+    // Cards Animation
+    gsap.fromTo(".shows-card",
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: ".shows-grid",
+          start: "top 80%",
+          once: true
+        }
+      }
+    );
+
+    // Button Animation
+    gsap.fromTo(".shows-button",
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ".shows-button",
+          start: "top 90%",
+          once: true
+        }
+      }
+    );
+  }, { scope: containerRef, dependencies: [loading, shows] });
 
   useEffect(() => {
     const fetchShows = async () => {
@@ -36,13 +113,9 @@ export const ShowsSection = () => {
   }
 
   return (
-    <section className="py-32 container mx-auto px-6 max-w-7xl">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="mb-16"
+    <section ref={containerRef} className="py-32 container mx-auto px-6 max-w-7xl">
+      <div
+        className="shows-header mb-16"
       >
         <h2 className="font-heading text-5xl md:text-6xl font-bold text-white mb-4">
           Próximos <span className="text-gradient">Shows</span>
@@ -50,22 +123,19 @@ export const ShowsSection = () => {
         <p className="text-text-secondary text-lg max-w-2xl">
           Venha adorar conosco em uma experiência única de fé e música
         </p>
-      </motion.div>
+      </div>
 
       {shows.length === 0 && !loading ? (
-        <div className="text-center text-text-secondary py-8">
+        <div className="shows-empty text-center text-text-secondary py-8">
           Nenhum show agendado no momento.
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="shows-grid grid grid-cols-1 md:grid-cols-3 gap-6">
             {shows.map((show, index) => (
-          <motion.div
+          <div
             key={show.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            className="shows-card"
           >
             <Card className="p-6 hover:scale-[1.02] hover:border-primary/40 transition-all duration-300 flex flex-col h-full">
               <h3 className="font-heading text-xl font-bold text-white mb-5">
@@ -121,23 +191,19 @@ export const ShowsSection = () => {
                 Mais Informações
               </Button>
             </Card>
-          </motion.div>
+          </div>
         ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-12 text-center"
+          <div
+            className="shows-button mt-12 text-center"
           >
             <Link to="/shows">
               <Button variant="secondary" type="button">
                 Ver Todos os Shows
               </Button>
             </Link>
-          </motion.div>
+          </div>
         </>
       )}
     </section>

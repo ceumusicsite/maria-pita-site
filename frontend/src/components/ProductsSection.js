@@ -1,13 +1,90 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { api } from '@/lib/api';
 import { ShoppingBag } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export const ProductsSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const containerRef = useRef(null);
+
+  useGSAP(() => {
+    if (loading) return;
+
+    // Header Animation
+    gsap.fromTo(".products-header",
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ".products-header",
+          start: "top 85%",
+          once: true
+        }
+      }
+    );
+
+    // Empty state Animation
+    if (products.length === 0) {
+      gsap.fromTo(".products-empty",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: ".products-empty",
+            start: "top 85%",
+            once: true
+          }
+        }
+      );
+      return;
+    }
+
+    // Cards Animation
+    gsap.fromTo(".products-card",
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: ".products-grid",
+          start: "top 80%",
+          once: true
+        }
+      }
+    );
+
+    // Button Animation
+    gsap.fromTo(".products-button",
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ".products-button",
+          start: "top 90%",
+          once: true
+        }
+      }
+    );
+  }, { scope: containerRef, dependencies: [loading, products] });
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -40,13 +117,9 @@ export const ProductsSection = () => {
   };
 
   return (
-    <section className="py-32 container mx-auto px-6 max-w-7xl">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="mb-16"
+    <section ref={containerRef} className="py-32 container mx-auto px-6 max-w-7xl">
+      <div
+        className="products-header mb-16"
       >
         <h2 className="font-heading text-5xl md:text-6xl font-bold text-white mb-4">
           Loja <span className="text-gradient">Oficial</span>
@@ -54,22 +127,19 @@ export const ProductsSection = () => {
         <p className="text-text-secondary text-lg max-w-2xl">
           Produtos exclusivos para você levar um pedaço da experiência Maria Pita
         </p>
-      </motion.div>
+      </div>
 
       {products.length === 0 && !loading ? (
-        <div className="text-center text-text-secondary py-8">
+        <div className="products-empty text-center text-text-secondary py-8">
           Nenhum produto disponível no momento.
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="products-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product, index) => (
-          <motion.div
+          <div
             key={product.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            className="products-card"
           >
             <Card className="group cursor-pointer overflow-hidden hover:scale-105 transition-transform duration-300">
               <div className="relative aspect-square overflow-hidden bg-surface">
@@ -100,21 +170,17 @@ export const ProductsSection = () => {
                 </div>
               </div>
             </Card>
-          </motion.div>
+          </div>
         ))}
           </div>
 
-          <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 0.4 }}
-        className="mt-12 text-center"
-      >
+          <div
+            className="products-button mt-12 text-center"
+          >
             <Button variant="secondary" to="/products">
               Ver Todos os Produtos
             </Button>
-          </motion.div>
+          </div>
         </>
       )}
     </section>

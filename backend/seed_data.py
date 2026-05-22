@@ -9,38 +9,38 @@ def seed_database():
         {
             "title": "Se Levante",
             "description": "Um hino de coragem e fé que inspira a superar desafios",
-            "cover_url": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?crop=entropy&cs=srgb&fm=jpg&q=85",
+            "cover_url": "https://img.youtube.com/vi/mb7rskqf1A4/maxresdefault.jpg",
             "spotify_url": "https://open.spotify.com/track/example",
-            "youtube_url": "https://youtube.com/watch?v=example",
+            "youtube_url": "https://www.youtube.com/watch?v=mb7rskqf1A4",
             "release_date": "2024-01-15",
             "featured": True
         },
         {
-            "title": "Sou Teu Pai",
+            "title": "Sou Teu Pai (feat. Samuel Messias)",
             "description": "Mensagem poderosa sobre o amor paternal de Deus",
-            "cover_url": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?crop=entropy&cs=srgb&fm=jpg&q=85",
+            "cover_url": "https://img.youtube.com/vi/aioMdIBKvt8/maxresdefault.jpg",
             "spotify_url": "https://open.spotify.com/track/example2",
-            "youtube_url": "https://youtube.com/watch?v=example2",
+            "youtube_url": "https://www.youtube.com/watch?v=aioMdIBKvt8",
             "release_date": "2024-03-20",
             "featured": True
         },
         {
             "title": "Vem de Deus",
             "description": "Adoração que eleva a alma e fortalece a fé",
-            "cover_url": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?crop=entropy&cs=srgb&fm=jpg&q=85",
+            "cover_url": "https://img.youtube.com/vi/S4Jve-nf9dU/maxresdefault.jpg",
             "spotify_url": "https://open.spotify.com/track/example3",
-            "youtube_url": "https://youtube.com/watch?v=example3",
+            "youtube_url": "https://www.youtube.com/watch?v=S4Jve-nf9dU",
             "release_date": "2024-05-10",
             "featured": True
         },
         {
-            "title": "Eu Cuido",
+            "title": "Eu Cuido (feat. Eurice Diniz)",
             "description": "Canção de conforto e proteção divina",
-            "cover_url": "https://images.unsplash.com/photo-1487180144351-b8472da7d491?crop=entropy&cs=srgb&fm=jpg&q=85",
+            "cover_url": "https://img.youtube.com/vi/2vnOLhljeV4/maxresdefault.jpg",
             "spotify_url": "https://open.spotify.com/track/example4",
-            "youtube_url": "https://youtube.com/watch?v=example4",
-            "release_date": "2024-07-22",
-            "featured": False
+            "youtube_url": "https://www.youtube.com/watch?v=2vnOLhljeV4",
+            "release_date": "2025-02-10",
+            "featured": True
         },
     ]
     

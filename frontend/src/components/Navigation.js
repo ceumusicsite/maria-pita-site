@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from './ui/Button';
-import { cn } from '@/lib/utils';
+import { useLocation } from 'react-router-dom';
+import PillNav from './PillNav';
+import StaggeredMenu from './StaggeredMenu';
+import logo from '../assets/logo.svg';
 
 export const Navigation = () => {
-  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const isHome = location.pathname === '/';
 
+  // Detect scroll state
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -15,56 +18,84 @@ export const Navigation = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { to: '/', label: 'INÍCIO' },
-    { to: '/releases', label: 'MÚSICAS' },
-    { to: '/shows', label: 'SHOWS' },
-    { to: '/products', label: 'LOJA' },
-    { to: '/about', label: 'SOBRE' },
-    { to: '/contact', label: 'CONTATO' },
+  // Track active menu style (pill or staggered)
+  const [menuStyle, setMenuStyle] = useState(() => {
+    return localStorage.getItem('menuStyle') || 'pill';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('menuStyle', menuStyle);
+  }, [menuStyle]);
+
+  const navItems = [
+    { label: 'Início', href: '/' },
+    { label: 'Músicas', href: '/releases' },
+    { label: 'Shows', href: '/shows' },
+    { label: 'Loja', href: '/products' },
+    { label: 'Sobre', href: '/about' },
+    { label: 'Contato', href: '/contact' }
   ];
 
+  // Map items for StaggeredMenu (requires link instead of href)
+  const staggeredItems = navItems.map(item => ({
+    label: item.label,
+    link: item.href,
+    ariaLabel: `Ir para ${item.label}`
+  }));
+
+  const socialItems = [
+    { label: 'Instagram', link: 'https://www.instagram.com/mariapitacantora_/' },
+    { label: 'YouTube', link: 'https://www.youtube.com/@mariapitacantora' },
+    { label: 'Spotify', link: 'https://open.spotify.com/intl-pt/artist/7fw7DfkvI0fMyEKfOw0k6n' }
+  ];
+
+  const toggleStyle = () => {
+    setMenuStyle(prev => (prev === 'pill' ? 'staggered' : 'pill'));
+  };
+
   return (
-    <nav
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "glassmorphism py-4" : "bg-transparent py-6"
+    <>
+      {menuStyle === 'pill' ? (
+        <PillNav
+          logo={logo}
+          logoAlt="Maria Pita Logo"
+          items={navItems}
+          activeHref={location.pathname}
+          ease="power3.easeOut"
+          baseColor={isHome ? "#120F17" : "#ffffff"}
+          pillColor={isHome ? "#ffffff" : "#120F17"}
+          pillTextColor={isHome ? "#120F17" : "#ffffff"}
+          hoveredPillTextColor={isHome ? "#ffffff" : "#120F17"}
+          initialLoadAnimation={true}
+        />
+      ) : (
+        <StaggeredMenu
+          position="right"
+          items={staggeredItems}
+          socialItems={socialItems}
+          displaySocials={true}
+          displayItemNumbering={true}
+          menuButtonColor={isHome ? (scrolled ? "#ffffff" : "#120F17") : "#ffffff"}
+          openMenuButtonColor="#ffffff"
+          changeMenuColorOnOpen={true}
+          colors={['#FF2E8B', '#120F17']}
+          logoUrl={logo}
+          accentColor="#FF2E8B"
+          isFixed={true}
+        />
       )}
-    >
-      <div className="container mx-auto px-6 max-w-7xl">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-heading font-bold text-gradient">
-            MARIA PITA
-          </Link>
-          
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={cn(
-                  "text-xs uppercase tracking-widest transition-colors",
-                  location.pathname === link.to
-                    ? "text-primary"
-                    : "text-text-secondary hover:text-white"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
 
-          <Button variant="primary" className="hidden md:block">
-            Contratar
-          </Button>
-
-          <button className="md:hidden text-white">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </nav>
+      {/* Floating Menu Switcher - Hidden in production */}
+      <button
+        onClick={toggleStyle}
+        className="hidden fixed bottom-6 right-6 z-[9999] px-5 py-3 rounded-full bg-black/80 backdrop-blur-xl border border-white/10 text-white text-xs font-bold uppercase tracking-widest shadow-2xl flex items-center gap-3 cursor-pointer hover:border-[#FF2E8B]/50 hover:scale-105 active:scale-95 transition-all pointer-events-auto"
+        style={{
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 46, 139, 0.15)'
+        }}
+      >
+        <span className="w-2 h-2 rounded-full bg-[#FF2E8B] animate-pulse"></span>
+        <span>Alternar Menu ({menuStyle === 'pill' ? 'PillNav' : 'Staggered'})</span>
+      </button>
+    </>
   );
 };

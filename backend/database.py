@@ -40,9 +40,11 @@ class SupabaseClient:
 class QueryBuilder:
     """Construtor de queries para Supabase"""
     
-    def __init__(self, client: SupabaseClient, table_name: str):
+    def __init__(self, client: SupabaseClient, table_name: str, method: str = "GET", data: Any = None):
         self.client = client
         self.table_name = table_name
+        self._method = method
+        self._data = data
         self._select_fields = "*"
         self._filters = []
         self._order_by = None
@@ -67,19 +69,34 @@ class QueryBuilder:
     
     def execute(self):
         url = f"{self.client.base_url}/{self.table_name}"
-        params = {"select": self._select_fields}
+        params = {}
+        
+        # Apenas incluir select para métodos de leitura ou se explicitamente necessário
+        if self._method == "GET":
+            params["select"] = self._select_fields
         
         for filter_str in self._filters:
             key, value = filter_str.split("=", 1)
             params[key] = value
         
-        if self._order_by:
+        if self._order_by and self._method == "GET":
             params["order"] = self._order_by
         
-        if self._limit_value:
+        if self._limit_value and self._method == "GET":
             params["limit"] = str(self._limit_value)
         
-        response = self.client.client.get(url, params=params)
+        # Executar a requisição apropriada
+        if self._method == "GET":
+            response = self.client.client.get(url, params=params)
+        elif self._method == "POST":
+            response = self.client.client.post(url, json=self._data, params=params)
+        elif self._method == "PATCH":
+            response = self.client.client.patch(url, json=self._data, params=params)
+        elif self._method == "DELETE":
+            response = self.client.client.delete(url, params=params)
+        else:
+            raise ValueError(f"Método HTTP desconhecido: {self._method}")
+            
         response.raise_for_status()
         
         return type('Response', (), {'data': response.json()})()
@@ -92,25 +109,16 @@ class Table:
         self.table_name = table_name
     
     def select(self, fields: str = "*"):
-        return QueryBuilder(self.client, self.table_name).select(fields)
+        return QueryBuilder(self.client, self.table_name, method="GET").select(fields)
     
     def insert(self, data: Dict[str, Any] | List[Dict[str, Any]]):
-        url = f"{self.client.base_url}/{self.table_name}"
-        response = self.client.client.post(url, json=data)
-        response.raise_for_status()
-        return type('Response', (), {'data': response.json()})()
+        return QueryBuilder(self.client, self.table_name, method="POST", data=data)
     
     def update(self, data: Dict[str, Any]):
-        url = f"{self.client.base_url}/{self.table_name}"
-        response = self.client.client.patch(url, json=data)
-        response.raise_for_status()
-        return type('Response', (), {'data': response.json()})()
+        return QueryBuilder(self.client, self.table_name, method="PATCH", data=data)
     
     def delete(self):
-        url = f"{self.client.base_url}/{self.table_name}"
-        response = self.client.client.delete(url)
-        response.raise_for_status()
-        return type('Response', (), {'data': response.json()})()
+        return QueryBuilder(self.client, self.table_name, method="DELETE")
 
 # Criar cliente Supabase
 supabase = SupabaseClient(SUPABASE_URL, SUPABASE_KEY)

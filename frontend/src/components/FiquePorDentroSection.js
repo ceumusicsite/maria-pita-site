@@ -1,13 +1,89 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
 import { Card } from './ui/Card';
 import { Badge } from './ui/Badge';
 import { api } from '@/lib/api';
 import { Clock, ExternalLink, ArrowRight, Newspaper, Music, Radio } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export const FiquePorDentroSection = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const containerRef = useRef(null);
+
+  useGSAP(() => {
+    if (loading) return;
+
+    // Header Animation
+    gsap.fromTo(".fique-header",
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ".fique-header",
+          start: "top 85%",
+          once: true
+        }
+      }
+    );
+
+    // Cards Animation
+    if (news.length > 0) {
+      gsap.fromTo(".fique-card",
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          stagger: 0.15,
+          scrollTrigger: {
+            trigger: ".fique-grid",
+            start: "top 80%",
+            once: true
+          }
+        }
+      );
+    }
+
+    // Button Animation
+    gsap.fromTo(".fique-button",
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ".fique-button",
+          start: "top 90%",
+          once: true
+        }
+      }
+    );
+
+    // Social Animation
+    gsap.fromTo(".fique-social",
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: ".fique-social",
+          start: "top 85%",
+          once: true
+        }
+      }
+    );
+  }, { scope: containerRef, dependencies: [loading, news] });
 
   useEffect(() => {
     fetchNews();
@@ -97,14 +173,10 @@ export const FiquePorDentroSection = () => {
   };
 
   return (
-    <section className="py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-background via-surface/30 to-background">
+    <section ref={containerRef} className="py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-background via-surface/30 to-background">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-10 sm:mb-14 lg:mb-16"
+        <div
+          className="fique-header text-center mb-10 sm:mb-14 lg:mb-16"
         >
           <div className="inline-block bg-primary/20 p-3 sm:p-4 rounded-full mb-4 sm:mb-6">
             <Newspaper className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
@@ -115,7 +187,7 @@ export const FiquePorDentroSection = () => {
           <p className="text-text-secondary text-base sm:text-lg max-w-2xl mx-auto px-2">
             Novidades, bastidores e tudo que está rolando no mundo da Maria Pita
           </p>
-        </motion.div>
+        </div>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
@@ -128,15 +200,11 @@ export const FiquePorDentroSection = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          <div className="fique-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {news.map((item, index) => (
-              <motion.div
+              <div
                 key={item.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="min-w-0"
+                className="fique-card min-w-0"
               >
                 <Card className="group overflow-hidden hover:border-primary/40 transition-all duration-300 h-full flex flex-col p-4 sm:p-5 lg:p-6">
                   {/* Imagem de destaque */}
@@ -178,34 +246,26 @@ export const FiquePorDentroSection = () => {
                     </button>
                   </div>
                 </Card>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
 
         {/* Ver todas */}
         {!loading && news.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-center mt-8 sm:mt-12 px-2"
+          <div
+            className="fique-button text-center mt-8 sm:mt-12 px-2"
           >
             <button type="button" className="group inline-flex items-center justify-center gap-2 text-primary hover:text-white transition-colors border border-primary/30 hover:border-primary w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full font-medium text-sm sm:text-base">
               Ver todas as notícias
               <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </button>
-          </motion.div>
+          </div>
         )}
 
         {/* Redes sociais */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-14 sm:mt-20 text-center px-2"
+        <div
+          className="fique-social mt-14 sm:mt-20 text-center px-2"
         >
           <p className="text-text-secondary text-sm sm:text-base mb-4 sm:mb-6">Acompanhe também nas redes sociais</p>
           <div className="flex justify-center gap-2 sm:gap-4 flex-wrap">
@@ -225,7 +285,7 @@ export const FiquePorDentroSection = () => {
               </a>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
