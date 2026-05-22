@@ -3,7 +3,7 @@ const isLocalhost = typeof window !== 'undefined' &&
    window.location.hostname === '127.0.0.1' || 
    window.location.hostname.startsWith('192.168.'));
 
-const API_BASE_URL = isLocalhost ? (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000') : '';
+const API_BASE_URL = isLocalhost ? (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000') : '/_/backend';
 
 // Static fallbacks containing live production data from Supabase
 const staticReleases = [
@@ -311,6 +311,30 @@ export const api = {
       const error = await response.json();
       throw new Error(error.detail || `API Error: ${response.statusText}`);
     }
+    return await response.json();
+  },
+
+  async upload(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/api/upload`, {
+      method: 'POST',
+      headers: headers,
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || `Upload Error: ${response.statusText}`);
+    }
+    
     return await response.json();
   }
 };

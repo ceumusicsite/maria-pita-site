@@ -16,11 +16,11 @@ try:
     from datetime import datetime, timezone, timedelta
 
     from dotenv import load_dotenv
-    from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, Header
+    from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends, Header, UploadFile, File
     from pydantic import BaseModel, ConfigDict, EmailStr
     from starlette.middleware.cors import CORSMiddleware
 
-    from database import supabase
+    from database import supabase, SUPABASE_URL, SUPABASE_KEY
     from security import verify_admin_token, verify_password, generate_session_token, get_password_hash
 
     load_dotenv(ROOT_DIR / '.env')
@@ -1114,6 +1114,54 @@ async def get_social_settings():
         return settings
     except Exception as e:
         logger.error(f"Erro ao obter configurações sociais: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    admin: dict = Depends(verify_admin_token)
+):
+    try:
+        import uuid
+        import httpx
+        
+        # Read the file contents
+        contents = await file.read()
+        
+        original_filename = file.filename or "image.jpg"
+        ext = Path(original_filename).suffix or ".jpg"
+        
+        # Check MIME type/extension
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail="Apenas arquivos de imagem são permitidos.")
+        
+        # Clean filename to be safe
+        clean_name = "".join(c for c in Path(original_filename).stem if c.isalnum() or c in ("-", "_"))
+        clean_name = clean_name[:50]
+        unique_filename = f"{uuid.uuid4().hex}_{clean_name}{ext}"
+        
+        # Upload binary to Supabase Storage REST API
+        url = f"{SUPABASE_URL}/storage/v1/object/media/{unique_filename}"
+        
+        headers = {
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "apikey": SUPABASE_KEY,
+            "Content-Type": file.content_type
+        }
+        
+        with httpx.Client() as client:
+            response = client.post(url, content=contents, headers=headers, timeout=30.0)
+            response.raise_for_status()
+            
+        # Return public URL
+        public_url = f"{SUPABASE_URL}/storage/v1/object/public/media/{unique_filename}"
+        return {"url": public_url}
+        
+    except httpx.HTTPStatusError as e:
+        logger.error(f"Erro de status no upload do Supabase Storage: {e.response.text}")
+        raise HTTPException(status_code=500, detail=f"Erro no provedor de storage: {e.response.text}")
+    except Exception as e:
+        logger.error(f"Erro geral no upload: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.patch("/settings/social", response_model=SiteSettingsResponse)

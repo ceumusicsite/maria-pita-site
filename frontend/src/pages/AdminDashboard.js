@@ -50,6 +50,11 @@ export default function AdminDashboard() {
   const [showForm, setShowForm] = useState({ date: '', city: '', state: '', venue: '', event_name: '', time: '' });
   const [releaseForm, setReleaseForm] = useState({ title: '', description: '', cover_url: '', spotify_url: '', youtube_url: '', release_date: '', featured: false });
 
+  // File Upload states
+  const [productImageFile, setProductImageFile] = useState(null);
+  const [releaseCoverFile, setReleaseCoverFile] = useState(null);
+  const [aboutPhotoFile, setAboutPhotoFile] = useState(null);
+
   // Authenticate Admin on mount
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -134,8 +139,20 @@ export default function AdminDashboard() {
   const handleSaveProduct = async (e) => {
     e.preventDefault();
     try {
+      let finalImageUrl = productForm.image_url;
+      if (productImageFile) {
+        const uploadRes = await api.upload(productImageFile);
+        finalImageUrl = uploadRes.url;
+      }
+
+      if (!finalImageUrl) {
+        alert('Por favor, anexe uma imagem para o produto.');
+        return;
+      }
+
       const payload = {
         ...productForm,
+        image_url: finalImageUrl,
         price: parseFloat(productForm.price),
         stock: parseInt(productForm.stock)
       };
@@ -202,6 +219,11 @@ export default function AdminDashboard() {
     e.preventDefault();
     try {
       let finalCoverUrl = releaseForm.cover_url;
+      if (releaseCoverFile) {
+        const uploadRes = await api.upload(releaseCoverFile);
+        finalCoverUrl = uploadRes.url;
+      }
+
       if (!finalCoverUrl && releaseForm.youtube_url) {
         const videoId = getYouTubeVideoId(releaseForm.youtube_url);
         if (videoId) {
@@ -248,8 +270,25 @@ export default function AdminDashboard() {
   const handleSaveAbout = async (e) => {
     e.preventDefault();
     try {
-      const updated = await api.patch('/about', about);
+      let finalPhotoUrl = about.photo_url;
+      if (aboutPhotoFile) {
+        const uploadRes = await api.upload(aboutPhotoFile);
+        finalPhotoUrl = uploadRes.url;
+      }
+
+      if (!finalPhotoUrl) {
+        alert('Por favor, anexe uma foto de perfil.');
+        return;
+      }
+
+      const payload = {
+        ...about,
+        photo_url: finalPhotoUrl
+      };
+
+      const updated = await api.patch('/about', payload);
       setAbout(updated);
+      setAboutPhotoFile(null);
       alert('Perfil da artista atualizado com sucesso!');
     } catch (err) {
       alert(`Erro ao atualizar perfil: ${err.message}`);
@@ -290,6 +329,9 @@ export default function AdminDashboard() {
     setProductForm({ name: '', description: '', price: '', image_url: '', category: '', stock: 0, featured: false });
     setShowForm({ date: '', city: '', state: '', venue: '', event_name: '', time: '' });
     setReleaseForm({ title: '', description: '', cover_url: '', spotify_url: '', youtube_url: '', release_date: '', featured: false });
+    setProductImageFile(null);
+    setReleaseCoverFile(null);
+    setAboutPhotoFile(null);
   };
 
   const openEditProduct = (prod) => {
@@ -856,15 +898,42 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">URL da Imagem</label>
-                        <input
-                          type="url"
-                          required
-                          value={productForm.image_url}
-                          onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
-                          placeholder="https://exemplo.com/imagem.jpg"
-                        />
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">Imagem do Produto (Anexo)</label>
+                        <div className="flex items-center gap-4 mt-2">
+                          { (productImageFile || productForm.image_url) ? (
+                            <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-white/10 bg-black flex-shrink-0">
+                              <img 
+                                src={productImageFile ? URL.createObjectURL(productImageFile) : productForm.image_url} 
+                                alt="Preview" 
+                                className="w-full h-full object-cover" 
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-16 h-16 rounded-xl border border-dashed border-white/20 bg-black/40 flex items-center justify-center text-white/30 flex-shrink-0">
+                              <span className="text-[10px]">Sem foto</span>
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              id="product-image-upload"
+                              className="hidden"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setProductImageFile(e.target.files[0]);
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor="product-image-upload"
+                              className="inline-flex px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-wider text-white cursor-pointer transition-all"
+                            >
+                              Selecionar Imagem
+                            </label>
+                            <p className="text-[10px] text-white/40 mt-1">Selecione um arquivo PNG ou JPG.</p>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="space-y-1">
@@ -1205,14 +1274,42 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">URL da Capa (Opcional se inserir link do YouTube)</label>
-                        <input
-                          type="url"
-                          value={releaseForm.cover_url}
-                          onChange={(e) => setReleaseForm({ ...releaseForm, cover_url: e.target.value })}
-                          className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
-                          placeholder="https://img.youtube.com/vi/mb7rskqf1A4/maxresdefault.jpg"
-                        />
+                        <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">Imagem de Capa (Anexo - Opcional se usar YouTube)</label>
+                        <div className="flex items-center gap-4 mt-2">
+                          { (releaseCoverFile || releaseForm.cover_url) ? (
+                            <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-white/10 bg-black flex-shrink-0">
+                              <img 
+                                src={releaseCoverFile ? URL.createObjectURL(releaseCoverFile) : releaseForm.cover_url} 
+                                alt="Preview" 
+                                className="w-full h-full object-cover" 
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-16 h-16 rounded-xl border border-dashed border-white/20 bg-black/40 flex items-center justify-center text-white/30 flex-shrink-0">
+                              <span className="text-[10px]">Sem foto</span>
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              id="release-cover-upload"
+                              className="hidden"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                  setReleaseCoverFile(e.target.files[0]);
+                                }
+                              }}
+                            />
+                            <label
+                              htmlFor="release-cover-upload"
+                              className="inline-flex px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-wider text-white cursor-pointer transition-all"
+                            >
+                              Selecionar Capa
+                            </label>
+                            <p className="text-[10px] text-white/40 mt-1">Selecione um arquivo PNG ou JPG.</p>
+                          </div>
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1367,14 +1464,42 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">URL da Foto de Perfil</label>
-                      <input
-                        type="url"
-                        required
-                        value={about.photo_url}
-                        onChange={(e) => setAbout({ ...about, photo_url: e.target.value })}
-                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FF2E8B]"
-                      />
+                      <label className="text-xs uppercase tracking-widest text-white/50 block font-semibold">Foto de Perfil (Anexo)</label>
+                      <div className="flex items-center gap-4 mt-2">
+                        { (aboutPhotoFile || about.photo_url) ? (
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-white/10 bg-black flex-shrink-0">
+                            <img 
+                              src={aboutPhotoFile ? URL.createObjectURL(aboutPhotoFile) : about.photo_url} 
+                              alt="Preview" 
+                              className="w-full h-full object-cover" 
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-16 h-16 rounded-xl border border-dashed border-white/20 bg-black/40 flex items-center justify-center text-white/30 flex-shrink-0">
+                            <span className="text-[10px]">Sem foto</span>
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            id="about-photo-upload"
+                            className="hidden"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                setAboutPhotoFile(e.target.files[0]);
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor="about-photo-upload"
+                            className="inline-flex px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-wider text-white cursor-pointer transition-all"
+                          >
+                            Selecionar Foto
+                          </label>
+                          <p className="text-[10px] text-white/40 mt-1">Selecione um arquivo PNG ou JPG.</p>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="space-y-1">
