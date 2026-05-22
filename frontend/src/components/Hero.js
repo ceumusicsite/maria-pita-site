@@ -114,7 +114,7 @@ export const Hero = () => {
 
         {/* Lado Direito - Imagem da Artista (posicionada na esquerda no PC via flex-row-reverse) */}
         <motion.div
-          className="absolute md:relative z-10 left-[-10vw] md:left-0 bottom-0 w-[60vw] max-md:w-[60vw] md:w-[55%] h-[72vh] max-md:h-[72vh] md:h-screen flex items-end justify-start md:justify-center pointer-events-none"
+          className="absolute md:relative z-10 left-[-12vw] md:left-0 bottom-0 w-[75vw] md:w-[50%] h-[75vh] md:h-screen flex items-end justify-start pointer-events-none"
           style={{ y: yImage }}
         >
           {/* Fade & Slide up na entrada */}
@@ -122,13 +122,13 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 150 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-full relative flex justify-start md:justify-center items-end pb-0"
+            className="w-full h-full relative flex justify-start items-end pb-0"
           >
             {/* Flutuação contínua */}
             <motion.div
               animate={{ y: [0, -12, 0] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="relative w-full h-full flex justify-start md:justify-center items-end"
+              className="relative w-full h-full flex justify-start items-end"
             >
               {/* Glow atrás da imagem para focar na face e roupa */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full bg-white/70 blur-[80px] -z-10"></div>
@@ -137,7 +137,7 @@ export const Hero = () => {
               <img
                 src={artistImage}
                 alt="Maria Pita"
-                className="w-full max-h-[120%] scale-[1.25] md:scale-[1.2] lg:scale-[1.3] -translate-y-2 md:-translate-y-10 origin-bottom object-contain drop-shadow-2xl z-20 object-bottom"
+                className="w-full max-h-[120%] scale-[1.5] md:scale-[1.25] lg:scale-[1.3] -translate-y-2 md:-translate-y-10 origin-bottom object-contain drop-shadow-2xl z-20 object-bottom"
                 style={{
                   filter: "drop-shadow(0px 30px 40px rgba(0,0,0,0.25))",
                   WebkitMaskImage: 'linear-gradient(to top, transparent 2%, rgba(0, 0, 0, 1) 18%)',
