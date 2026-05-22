@@ -114,7 +114,7 @@ export const Hero = () => {
 
         {/* Lado Direito - Imagem da Artista */}
         <motion.div
-          className="absolute md:relative z-10 left-[-18vw] max-md:left-[-18vw] bottom-0 w-[85vw] max-md:w-[85vw] md:w-[55%] h-[72vh] max-md:h-[72vh] md:h-screen flex items-end justify-start md:justify-center pointer-events-none"
+          className="absolute md:relative z-10 left-[-10vw] max-md:left-[-10vw] bottom-0 w-[60vw] max-md:w-[60vw] md:w-[55%] h-[72vh] max-md:h-[72vh] md:h-screen flex items-end justify-start md:justify-center pointer-events-none"
           style={{ y: yImage }}
         >
           {/* Fade & Slide up na entrada */}
@@ -137,7 +137,7 @@ export const Hero = () => {
               <img
                 src={artistImage}
                 alt="Maria Pita"
-                className="w-full max-h-[120%] scale-[1.75] md:scale-[1.2] lg:scale-[1.3] -translate-y-2 md:-translate-y-10 origin-bottom object-contain drop-shadow-2xl z-20 object-bottom"
+                className="w-full max-h-[120%] scale-[1.25] md:scale-[1.2] lg:scale-[1.3] -translate-y-2 md:-translate-y-10 origin-bottom object-contain drop-shadow-2xl z-20 object-bottom"
                 style={{
                   filter: "drop-shadow(0px 30px 40px rgba(0,0,0,0.25))",
                   WebkitMaskImage: 'linear-gradient(to top, transparent 2%, rgba(0, 0, 0, 1) 18%)',
