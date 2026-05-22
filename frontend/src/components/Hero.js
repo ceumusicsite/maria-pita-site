@@ -86,23 +86,23 @@ export const Hero = () => {
         </div>
       </motion.div>
 
-      <div className="relative z-20 container mx-auto px-6 max-w-7xl h-full min-h-screen flex flex-col md:flex-row items-center pt-32 max-md:pt-44 md:pt-0 pb-16 md:pb-0">
+      <div className="relative z-20 container mx-auto px-6 max-w-7xl h-full min-h-screen flex flex-col md:flex-row-reverse items-center pt-32 max-md:pt-44 md:pt-0 pb-16 md:pb-0">
 
-        {/* Lado Esquerdo - Textos e Botão */}
+        {/* Lado Esquerdo - Textos e Botão (posicionados na direita no PC via flex-row-reverse) */}
         <motion.div
           initial={{ opacity: 0, y: 30, x: -20 }}
           animate={{ opacity: 1, y: 0, x: 0 }}
           transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-          className="w-full md:w-[45%] z-30 mb-8 md:mb-0 relative text-left max-md:text-right max-md:w-[62%] max-md:ml-auto max-md:mt-16 max-md:z-30"
+          className="w-full md:w-[45%] z-30 mb-8 md:mb-0 relative text-right max-md:w-[62%] max-md:ml-auto max-md:mt-16 max-md:z-30"
         >
-          <div className="absolute -left-10 -top-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
-          <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-[1.05] text-black max-md:text-right">
+          <div className="absolute -right-10 -top-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+          <h1 className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-[1.05] text-black text-right">
             Seja <br /><span className="text-primary relative inline-block mt-1 md:mt-2">Bem-vindo<span className="absolute bottom-2 left-0 w-full h-3 bg-primary/20 -z-10"></span></span><br /> ao meu site!
           </h1>
-          <p className="text-sm md:text-lg text-black/70 mb-6 md:mb-10 leading-relaxed font-body max-w-lg max-md:text-right">
+          <p className="text-sm md:text-lg text-black/70 mb-6 md:mb-10 leading-relaxed font-body max-w-lg text-right ml-auto">
             Neste espaço você encontrará um pouco da minha caminhada com Deus, minhas músicas e tudo aquilo que Ele me permite compartilhar.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 max-md:mt-6">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 max-md:mt-6 md:justify-end">
             <Button className="bg-primary text-white hover:bg-primary/90 text-sm md:text-base px-5 py-3 md:px-30 md:py-4 rounded-full button-premium-glow shadow-xl shadow-primary/20 transition-all w-full sm:w-auto">
               Conheça minha Loja
             </Button>
@@ -112,9 +112,9 @@ export const Hero = () => {
           </div>
         </motion.div>
 
-        {/* Lado Direito - Imagem da Artista */}
+        {/* Lado Direito - Imagem da Artista (posicionada na esquerda no PC via flex-row-reverse) */}
         <motion.div
-          className="absolute md:relative z-10 left-[-10vw] max-md:left-[-10vw] bottom-0 w-[60vw] max-md:w-[60vw] md:w-[55%] h-[72vh] max-md:h-[72vh] md:h-screen flex items-end justify-start md:justify-center pointer-events-none"
+          className="absolute md:relative z-10 left-[-10vw] md:left-0 bottom-0 w-[60vw] max-md:w-[60vw] md:w-[55%] h-[72vh] max-md:h-[72vh] md:h-screen flex items-end justify-start md:justify-center pointer-events-none"
           style={{ y: yImage }}
         >
           {/* Fade & Slide up na entrada */}
