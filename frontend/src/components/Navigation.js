@@ -20,12 +20,16 @@ export const Navigation = () => {
 
   // Track active menu style (pill or staggered)
   const [menuStyle, setMenuStyle] = useState(() => {
-    return localStorage.getItem('menuStyle') || 'pill';
+    return localStorage.getItem('menuStyle') || 'staggered';
   });
 
   useEffect(() => {
-    localStorage.setItem('menuStyle', menuStyle);
-  }, [menuStyle]);
+    // Force reset legacy local storage values to 'staggered' to clear cache
+    if (localStorage.getItem('menuStyle') !== 'staggered') {
+      localStorage.setItem('menuStyle', 'staggered');
+      setMenuStyle('staggered');
+    }
+  }, []);
 
   const navItems = [
     { label: 'Início', href: '/' },
